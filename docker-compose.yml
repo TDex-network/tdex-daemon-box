@@ -1,0 +1,37 @@
+version: "3"
+services:
+  tdex:
+    image: truedex/tdex-daemon
+    container_name: tdex
+    ports:
+      - 9000:9000
+      - 9945:9945
+    volumes:
+      - $PWD/tdex-daemon-data:/root/.tdex-daemon
+    environment:
+      - TDEX_PASSWORD=${TDEX_PASSWORD}
+    restart: unless-stopped
+  gwp:
+    image: truedex/grpcwebproxy
+    container_name: gwp
+    depends_on:
+      - tdex
+    ports:
+      - 8080:8080
+    command:
+      - --backend_addr=tdex:9945
+      - --run_tls_server=false
+      - --allow_all_origins
+    restart: unless-stopped
+  caddy:
+    image: caddy
+    container_name: caddy
+    depends_on:
+      - gwp
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - $PWD/caddy-data:/data
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+    restart: unless-stopped
