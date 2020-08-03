@@ -7,7 +7,7 @@ services:
       - 9000:9000
       - 9945:9945
     volumes:
-      - $PWD/tdex-daemon-data:/root/.tdex-daemon
+      - $PWD/data:/root/.tdex-daemon
     environment:
       - TDEX_PASSWORD=${TDEX_PASSWORD}
     restart: unless-stopped
